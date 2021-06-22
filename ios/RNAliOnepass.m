@@ -617,6 +617,35 @@ RCT_EXPORT_METHOD(setDialogUIConfig:(NSDictionary *)config resolve:(RCTPromiseRe
     resolve(@"");
 }
 
+// 检测当前环境是否⽀持本级号码校验，⽀不⽀持提前知道
+RCT_EXPORT_METHOD(checkEnvAvailablePhoneVerify:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject){
+    if(![self checkInit:reject]){
+        return;
+    }
+    [tXCommonHandler checkEnvAvailableWithAuthType:PNSAuthTypeVerifyToken complete:^(NSDictionary * _Nullable resultDic) {
+        NSLog(@"环境检查返回：%@", resultDic);
+        NSString *resultCode = [resultDic objectForKey:@"resultCode"];
+        if(resultCode==PNSCodeSuccess) {
+            resolve(@"ok");
+        } else {
+            reject(resultCode, [resultDic objectForKey:@"msg"], nil);
+        }
+    }];
+}
+// 取得本机号码校验token
+RCT_EXPORT_METHOD(getVerifyToken:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
+     [tXCommonHandler getVerifyTokenWithTimeout:3.0 complete:^(NSDictionary * _Nonnull resultDic) {
+         NSLog(@"获取本机号码校验Token返回：%@", resultDic);
+         NSString *resultCode = [resultDic objectForKey:@"resultCode"];
+         if(resultCode==NO) {
+             reject(resultCode, [resultDic objectForKey:@"msg"], nil);
+        } else {
+            NSString *token = [resultDic objectForKey:@"token"];
+            resolve(@token);
+        }
+     }]
+    
+}
 - (void)btnClick: (UIGestureRecognizer *) sender {
     dispatch_async(dispatch_get_main_queue(), ^{
         [[TXCommonHandler sharedInstance] cancelLoginVCAnimated:YES complete:nil];

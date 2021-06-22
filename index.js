@@ -70,6 +70,21 @@ export async function setDialogUIConfig(config) {
 }
 
 /**
+ * 检测当前环境是否⽀持本级号码校验，⽀不⽀持提前知道
+ * @return {Promise<*>}
+ */
+ export async function checkEnvAvailablePhoneVerify() {
+  return await RNAliOnepass.checkEnvAvailablePhoneVerify();
+}
+
+/**
+ * 取得本机号码校验token
+ * @return {Promise<*>}
+ */
+ export async function getVerifyToken() {
+  return await RNAliOnepass.getVerifyToken();
+}
+/**
  * 支持的监听事件
  * @type {{code, msg, requestCode, token, vendorName}}
  */
