@@ -32,7 +32,7 @@ public class RNAliOnepassModule extends ReactContextBaseJavaModule implements To
     private int fetchNumberTimeout = 3000;
     private int mScreenWidthDp;
     private int mScreenHeightDp;
-    private TokenResultListener mVerifyListener;
+    //private TokenResultListener mVerifyListener;
 
     public RNAliOnepassModule(ReactApplicationContext reactContext) {
         super(reactContext);
