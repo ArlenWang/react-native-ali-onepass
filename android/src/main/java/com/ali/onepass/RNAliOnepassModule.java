@@ -97,8 +97,7 @@ public class RNAliOnepassModule extends ReactContextBaseJavaModule implements To
         if (!checkInit(promise)) {
             return;
         }
-        
-        phoneNumberAuthHelper.setAuthListener(mVerifyListener);
+        //phoneNumberAuthHelper.setAuthListener(mVerifyListener);
         phoneNumberAuthHelper.getVerifyToken(5000);
     }
 
