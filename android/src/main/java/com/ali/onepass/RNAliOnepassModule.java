@@ -54,7 +54,7 @@ public class RNAliOnepassModule extends ReactContextBaseJavaModule implements To
     public void init(final String secretInfo, final Promise promise) {
         phoneNumberAuthHelper = PhoneNumberAuthHelper.getInstance(reactContext, this);
         phoneNumberAuthHelper.setAuthSDKInfo(secretInfo);
-        promise.resolve("");
+        promise.resolve("init:true");
     }
 
     private boolean checkInit(final Promise promise) {
@@ -168,7 +168,7 @@ public class RNAliOnepassModule extends ReactContextBaseJavaModule implements To
             return;
         }
         phoneNumberAuthHelper.getLoginToken(reactContext, fetchNumberTimeout);
-        promise.resolve("");
+        promise.resolve("true");
     }
 
     /**
@@ -180,7 +180,7 @@ public class RNAliOnepassModule extends ReactContextBaseJavaModule implements To
     @ReactMethod
     public void quitLoginPage(final Promise promise) {
         phoneNumberAuthHelper.quitLoginPage();
-        promise.resolve("");
+        promise.resolve("true");
     }
 
     /**
@@ -191,7 +191,7 @@ public class RNAliOnepassModule extends ReactContextBaseJavaModule implements To
     @ReactMethod
     public void hideLoginLoading(final Promise promise) {
         phoneNumberAuthHelper.hideLoginLoading();
-        promise.resolve("");
+        promise.resolve("true");
     }
 
 
@@ -237,7 +237,7 @@ public class RNAliOnepassModule extends ReactContextBaseJavaModule implements To
         setPrivacyUI(builder, config);
         setOtherUI(builder, config);
         phoneNumberAuthHelper.setAuthUIConfig(builder.create());
-        promise.resolve("");
+        promise.resolve("true");
     }
 
  // dialog登录
@@ -277,7 +277,7 @@ public class RNAliOnepassModule extends ReactContextBaseJavaModule implements To
                 .setScreenOrientation(authPageOrientation);
 
         phoneNumberAuthHelper.setAuthUIConfig(builder.create());
-        promise.resolve("");
+        promise.resolve("true");
     }
 
 

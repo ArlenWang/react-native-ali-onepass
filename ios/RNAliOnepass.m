@@ -33,7 +33,7 @@ RCT_EXPORT_METHOD(init:(NSString *)secretInfo resolve:(RCTPromiseResolveBlock)re
     [tXCommonHandler setAuthSDKInfo:secretInfo complete:^(NSDictionary * _Nonnull resultDic) {
         NSString *resultCode = [resultDic objectForKey:@"resultCode"];
         if(resultCode==PNSCodeSuccess) {
-            resolve(@"");
+            resolve(@"true");
         } else {
             reject(resultCode, [resultDic objectForKey:@"msg"], nil);
         }
@@ -57,7 +57,7 @@ RCT_EXPORT_METHOD(checkEnvAvailable:(RCTPromiseResolveBlock)resolve reject:(RCTP
     [tXCommonHandler checkEnvAvailableWithComplete:^(NSDictionary * _Nullable resultDic) {
         NSString *resultCode = [resultDic objectForKey:@"resultCode"];
         if(resultCode==PNSCodeSuccess) {
-            resolve(@"");
+            resolve(@"true");
         } else {
             reject(resultCode, [resultDic objectForKey:@"msg"], nil);
         }
@@ -72,7 +72,7 @@ RCT_EXPORT_METHOD(prefetch:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRej
     [tXCommonHandler accelerateLoginPageWithTimeout:0.0 complete:^(NSDictionary * _Nonnull resultDic) {
         NSString *resultCode = [resultDic objectForKey:@"resultCode"];
         if(resultCode==PNSCodeSuccess) {
-            resolve(@"");
+            resolve(@"true");
         } else {
             reject(resultCode, [resultDic objectForKey:@"msg"], nil);
         }
@@ -107,20 +107,20 @@ RCT_EXPORT_METHOD(onePass:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseReje
                                                }];
         }
     }];
-    resolve(@"");
+    resolve(@"true");
 }
 
 // 退出登录授权
 RCT_EXPORT_METHOD(quitLoginPage:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject){
     [tXCommonHandler cancelLoginVCAnimated:true complete:^{
-        resolve(@"");
+        resolve(@"true");
     }];
 }
 
 // 授权⻚的 loading
 RCT_EXPORT_METHOD(hideLoginLoading:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject){
     [tXCommonHandler hideLoginLoading];
-    resolve(@"");
+    resolve(@"true");
 }
 
 // 运行商类型 中国移动/中国联通/中国电信
@@ -351,7 +351,7 @@ RCT_EXPORT_METHOD(setUIConfig:(NSDictionary *)config resolve:(RCTPromiseResolveB
         }
         return CGRectMake(x, y, width, height);
     };
-    resolve(@"");
+    resolve(@"true");
 }
 
 
@@ -614,7 +614,7 @@ RCT_EXPORT_METHOD(setDialogUIConfig:(NSDictionary *)config resolve:(RCTPromiseRe
 
     }
 
-    resolve(@"");
+    resolve(@"true");
 }
 
 // 取得本机号码校验token
