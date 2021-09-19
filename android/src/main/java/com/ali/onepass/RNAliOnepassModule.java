@@ -76,27 +76,12 @@ public class RNAliOnepassModule extends ReactContextBaseJavaModule implements To
         boolean available = phoneNumberAuthHelper.checkEnvAvailable();
         promise.resolve(available);
     }
-
-     /**
-     * SDK 环境检查函数,检查终端是否支持本机号码认证
-     */
-    @ReactMethod
-    public void checkEnvAvailableWithAuthType(final Promise promise) {
-        if (!checkInit(promise)) {
-            return;
-        }
-        boolean available = phoneNumberAuthHelper.checkEnvAvailable(1);
-        promise.resolve(available);
-    }
-
-     /**
-     * 取得本机号码校验token
-     */
+    
     @ReactMethod
     public void getVerifyToken() {
-        if (!checkInit(promise)) {
-            return;
-        }
+        // if (!checkInit(promise)) {
+        //     return;
+        // }
         //phoneNumberAuthHelper.setAuthListener(mVerifyListener);
         phoneNumberAuthHelper.getVerifyToken(5000);
     }
