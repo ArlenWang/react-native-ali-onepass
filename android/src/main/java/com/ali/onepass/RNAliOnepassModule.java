@@ -25,14 +25,13 @@ import com.mobile.auth.gatewayauth.model.TokenRet;
 import static com.ali.onepass.AppUtils.dp2px;
 
 public class RNAliOnepassModule extends ReactContextBaseJavaModule implements TokenResultListener {
-
+    static Promise COMMON_PROMISE = null;
     private final ReactApplicationContext reactContext;
     private PhoneNumberAuthHelper phoneNumberAuthHelper;
     private int prefetchNumberTimeout = 3000;
     private int fetchNumberTimeout = 3000;
     private int mScreenWidthDp;
     private int mScreenHeightDp;
-    //private TokenResultListener mVerifyListener;
 
     public RNAliOnepassModule(ReactApplicationContext reactContext) {
         super(reactContext);
@@ -65,29 +64,31 @@ public class RNAliOnepassModule extends ReactContextBaseJavaModule implements To
         return false;
     }
 
+    @ReactMethod
+    public void getVerifyToken() {
+        phoneNumberAuthHelper.getVerifyToken(5000);
+    }
+
     /**
      * SDK 环境检查函数,检查终端是否支持号码认证
      */
     @ReactMethod
-    public void checkEnvAvailable(final Promise promise) {
-        if (!checkInit(promise)) {
-            return;
-        }
-        boolean available = phoneNumberAuthHelper.checkEnvAvailable();
-        promise.resolve(available);
-    }
-    
-    @ReactMethod
-    public void getVerifyToken() {
-        // if (!checkInit(promise)) {
-        //     return;
-        // }
-        //phoneNumberAuthHelper.setAuthListener(mVerifyListener);
-        phoneNumberAuthHelper.getVerifyToken(5000);
+    public void checkEnvAvailable(final int type, final Promise promise)  {
+      if (!checkInit(promise)) {
+        return;
+      }
+      try {
+          COMMON_PROMISE = promise;
+          phoneNumberAuthHelper.checkEnvAvailable(type);
+
+      } catch (Exception e) {
+          promise.reject("-1" ,e.toString());
+      }
     }
 
     @Override
     public void onTokenSuccess(String s) {
+
         WritableMap writableMap = Arguments.createMap();
         TokenRet tokenRet = null;
         try {
@@ -100,11 +101,18 @@ public class RNAliOnepassModule extends ReactContextBaseJavaModule implements To
         } catch (Exception e) {
             e.printStackTrace();
         }
-        sendEvent("onTokenSuccess", writableMap);
+        if (COMMON_PROMISE != null) {
+          COMMON_PROMISE.resolve(writableMap);
+          COMMON_PROMISE = null;
+        } else {
+          sendEvent("onTokenSuccess", writableMap);
+        }
+        
     }
 
     @Override
     public void onTokenFailed(String s) {
+
         WritableMap writableMap = Arguments.createMap();
         TokenRet tokenRet = null;
         try {
@@ -116,7 +124,13 @@ public class RNAliOnepassModule extends ReactContextBaseJavaModule implements To
         } catch (Exception e) {
             e.printStackTrace();
         }
-        sendEvent("onTokenFailed", writableMap);
+        if (COMMON_PROMISE != null) {
+          COMMON_PROMISE.reject(tokenRet.getCode(), writableMap);
+          COMMON_PROMISE = null;
+        } else {
+          sendEvent("onTokenFailed", writableMap);
+        }
+        
     }
 
     /**
@@ -153,7 +167,7 @@ public class RNAliOnepassModule extends ReactContextBaseJavaModule implements To
             return;
         }
         phoneNumberAuthHelper.getLoginToken(reactContext, fetchNumberTimeout);
-        promise.resolve("true");
+        COMMON_PROMISE = promise;
     }
 
     /**
@@ -165,7 +179,7 @@ public class RNAliOnepassModule extends ReactContextBaseJavaModule implements To
     @ReactMethod
     public void quitLoginPage(final Promise promise) {
         phoneNumberAuthHelper.quitLoginPage();
-        promise.resolve("true");
+        COMMON_PROMISE = promise;
     }
 
     /**
@@ -176,7 +190,7 @@ public class RNAliOnepassModule extends ReactContextBaseJavaModule implements To
     @ReactMethod
     public void hideLoginLoading(final Promise promise) {
         phoneNumberAuthHelper.hideLoginLoading();
-        promise.resolve("true");
+        COMMON_PROMISE = promise;
     }
 
 
@@ -223,6 +237,7 @@ public class RNAliOnepassModule extends ReactContextBaseJavaModule implements To
         setOtherUI(builder, config);
         phoneNumberAuthHelper.setAuthUIConfig(builder.create());
         promise.resolve("true");
+
     }
 
  // dialog登录
@@ -262,63 +277,8 @@ public class RNAliOnepassModule extends ReactContextBaseJavaModule implements To
                 .setScreenOrientation(authPageOrientation);
 
         phoneNumberAuthHelper.setAuthUIConfig(builder.create());
-        promise.resolve("true");
-    }
+        COMMON_PROMISE = promise;
 
-
-    // 弹窗授权⻚⾯
-    private void configLoginTokenPortDialog(ReadableMap config) {
-        // initDynamicView();
-        phoneNumberAuthHelper.removeAuthRegisterXmlConfig();
-        phoneNumberAuthHelper.removeAuthRegisterViewConfig();
-        int authPageOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT;
-        if (Build.VERSION.SDK_INT == 26) {
-            authPageOrientation = ActivityInfo.SCREEN_ORIENTATION_BEHIND;
-        }
-        updateScreenSize(authPageOrientation);
-        int dialogWidth = (int) (mScreenWidthDp * 0.8f);
-        int dialogHeight = (int) (mScreenHeightDp * 0.65f);
-
-        int logBtnOffset = dialogHeight / 2;
-        phoneNumberAuthHelper.setAuthUIConfig(
-                new AuthUIConfig.Builder()
-                        // .setAppPrivacyOne("《自定义隐私协议》", "https://www.baidu.com")
-                        .setAppPrivacyColor(Color.GRAY, Color.parseColor("#FFA346"))
-                        .setPrivacyState(false)
-                        .setCheckboxHidden(true)
-//            .setNavHidden(false)
-//            .setNavColor(Color.parseColor("#FFA346"))
-//            .setNavReturnImgPath("icon_close")
-                        .setWebNavColor(Color.parseColor("#FFA346"))
-                        .setAuthPageActIn("in_activity", "out_activity")
-                        .setAuthPageActOut("in_activity", "out_activity")
-                        .setVendorPrivacyPrefix("《")
-                        .setVendorPrivacySuffix("》")
-                        .setLogoImgPath("ic_launcher")
-                        .setLogBtnWidth(dialogWidth - 30)
-                        .setLogBtnMarginLeftAndRight(15)
-                        .setLogBtnBackgroundPath("button")
-                        .setLogoOffsetY(48)
-                        .setLogoWidth(42)
-                        .setLogoHeight(42)
-                        .setLogBtnOffsetY(logBtnOffset)
-                        .setSloganText("为了您的账号安全，请先绑定手机号")
-                        .setSloganOffsetY(logBtnOffset - 100)
-                        .setSloganTextSize(11)
-                        .setNumFieldOffsetY(logBtnOffset - 50)
-                        .setSwitchOffsetY(logBtnOffset + 50)
-                        .setSwitchAccTextSize(11)
-//            .setPageBackgroundPath("dialog_page_background")
-                        .setNumberSize(17)
-                        .setLogBtnHeight(38)
-                        .setLogBtnTextSize(16)
-                        .setDialogWidth(dialogWidth)
-                        .setDialogHeight(dialogHeight)
-                        .setDialogBottom(false)
-//            .setDialogAlpha(82)
-                        .setScreenOrientation(authPageOrientation)
-                        .create()
-        );
     }
 
     /**
@@ -382,6 +342,10 @@ public class RNAliOnepassModule extends ReactContextBaseJavaModule implements To
         if (config.hasKey(methodName2KeyName("setWebNavTextSize"))) {
             builder.setWebNavTextSize(config.getInt(methodName2KeyName("setWebNavTextSize")));
         }
+
+        if (config.hasKey(methodName2KeyName("setNavHidden"))) {
+          builder.setNavHidden(config.getBoolean(methodName2KeyName("setNavHidden")));
+      }
     }
 
     /**
@@ -535,6 +499,9 @@ public class RNAliOnepassModule extends ReactContextBaseJavaModule implements To
         if (config.hasKey(methodName2KeyName("setAppPrivacyTwoName")) && config.hasKey(methodName2KeyName("setAppPrivacyTwoUrl"))) {
             builder.setAppPrivacyTwo(config.getString(methodName2KeyName("setAppPrivacyTwoName")), config.getString(methodName2KeyName("setAppPrivacyTwoUrl")));
         }
+        if (config.hasKey(methodName2KeyName("setAppPrivacyThreeName")) && config.hasKey(methodName2KeyName("setAppPrivacyThreeUrl"))) {
+          builder.setAppPrivacyThree(config.getString(methodName2KeyName("setAppPrivacyThreeName")), config.getString(methodName2KeyName("setAppPrivacyThreeUrl")));
+      }
         if (config.hasKey(methodName2KeyName("setPrivacyState"))) {
             builder.setPrivacyState(config.getBoolean(methodName2KeyName("setPrivacyState")));
         }
@@ -571,7 +538,9 @@ public class RNAliOnepassModule extends ReactContextBaseJavaModule implements To
      * 其他
      */
     private void setOtherUI(AuthUIConfig.Builder builder, ReadableMap config) {
-
+      if (config.hasKey(methodName2KeyName("setPageBackgroundPath"))) {
+        builder.setPageBackgroundPath(config.getString(methodName2KeyName("setPageBackgroundPath")));
+    }
     }
 
     private void sendEvent(String eventName, WritableMap params) {

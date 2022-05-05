@@ -11,7 +11,10 @@ export async function init(businessId) {
  * 调用下面接口前先校验是否支持
  * @return {Promise<*>}
  */
-export async function checkEnvAvailable() {
+export async function checkEnvAvailable(type=2) {
+  if (Platform.OS === 'android') {
+    return await RNAliOnepass.checkEnvAvailable(type);//1是本机号码 2是一键登录
+  }
   return await RNAliOnepass.checkEnvAvailable();
 }
 
