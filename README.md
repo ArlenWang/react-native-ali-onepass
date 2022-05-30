@@ -13,7 +13,7 @@ https://help.aliyun.com/document_detail/144186.html
 
 ### Mostly automatic installation
 
-`$ react-native link react-native-ali-onepass`
+`$ react-native link @arlenwang/react-native-ali-onepass`
 
 ### Manual installation
 
