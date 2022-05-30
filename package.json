@@ -1,6 +1,6 @@
 {
   "name": "@arlenwang/react-native-ali-onepass",
-  "version": "2.0.7",
+  "version": "2.0.8",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -31,5 +31,8 @@
   "license": "MIT",
   "peerDependencies": {
     "react-native": "*"
+  },
+  "devDependencies": {
+    "standard-version": "^9.5.0"
   }
 }

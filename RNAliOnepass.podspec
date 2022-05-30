@@ -6,7 +6,7 @@ Pod::Spec.new do |s|
   s.description  = "RNAliOnepass"
   s.homepage     = "https://github.com/ArlenWang/react-native-ali-onepass.git"
   s.license      = "MIT"
-  s.author             = { "yoonzm" => "yinzhim@gmail.com" }
+  s.author             = { "yoonzm ArlenWang" => "wangarlen@gmail.com" }
   s.platform     = :ios, "7.0"
   s.source       = { :git => "https://github.com/ArlenWang/react-native-ali-onepass.git", :tag => "master" }
   s.source_files  = "ios/*.{h,m}"
